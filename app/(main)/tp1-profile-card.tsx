@@ -16,7 +16,7 @@ export default function ProfileCard() {
     };
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#222831' }}>
             <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10, color: '#ffffffff' }}>
                 Big Cat
             </Text>
