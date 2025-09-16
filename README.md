@@ -29,6 +29,9 @@ Vous pouvez commencer à développer en modifiant les fichiers du dossier **app*
 ### Arborescence du projet :
 ![aperçu](image.png)
 
+### Résultat obtenu : 
+![alt text](image-1.png)
+
 ### Description
 Ce premier TP consiste à mettre en place l'application Expo et à créer un premier écran simple : une carte de profil interactive affichant un utilisateur fictif ("Big Cat"). L'objectif est d'introduire l'état local avec `useState` et la mise à jour de l'interface suite à une interaction utilisateur (bouton Follow / Unfollow).
 
