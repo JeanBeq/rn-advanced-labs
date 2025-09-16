@@ -1,112 +1,61 @@
-# TP1 — Initialisation du projet & Premier composant
+# Bienvenue dans votre application Expo 👋
 
-Bienvenue 👋 Ce dépôt contient l'initialisation d'une application mobile basée sur [Expo](https://expo.dev), utilisant **React Native**, **TypeScript** et le **fichier-based routing** d'Expo Router.
+Ce projet est une application [Expo](https://expo.dev) créée avec [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-Ce premier TP se concentre sur :
+## Commencer
 
-1. La mise en place de l'environnement Expo.
-2. La création d'un premier écran simple : une carte de profil (`ProfileCard`).
-3. L'introduction à l'état local avec `useState` via un compteur de followers dynamique.
+1. Installer les dépendances
 
----
+   ```bash
+   npm install
+   ```
 
-## ✅ Composant réalisé : ProfileCard
+2. Démarrer l'application
 
-Fonctionnalités actuelles :
+   ```bash
+   npx expo start
+   ```
 
-- Affichage d'une image distante (chat) via une URL (API publique cataas.com).
-- Nom du profil : « Big Cat ».
-- Rôle affiché : « Développeur Mobile ».
-- Compteur de followers dynamique (valeur évolutive à chaque interaction).
-- Bouton Follow / Unfollow qui :
-  - Incrémente le compteur lorsqu'on suit le profil.
-  - Décrémente (sans passer sous 0) lorsqu'on se désabonne.
-- Style centré et image avec coins arrondis.
+Dans la sortie du terminal, vous trouverez des options pour ouvrir l'application dans :
 
-Extrait (simplifié) :
+- un [build de développement](https://docs.expo.dev/develop/development-builds/introduction/)
+- un [émulateur Android](https://docs.expo.dev/workflow/android-studio-emulator/)
+- un [simulateur iOS](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), un bac à sable simplifié pour essayer le développement avec Expo
 
+Vous pouvez commencer à développer en modifiant les fichiers du dossier **app**. Ce projet utilise le [routing basé sur le système de fichiers](https://docs.expo.dev/router/introduction).
+
+## TP1 — Initialisation du projet & Premier composant : 
+### Arborescence du projet :
+![aperçu](image.png)
+
+### Description
+Ce premier TP consiste à mettre en place l'application Expo et à créer un premier écran simple : une carte de profil interactive affichant un utilisateur fictif ("Big Cat"). L'objectif est d'introduire l'état local avec `useState` et la mise à jour de l'interface suite à une interaction utilisateur (bouton Follow / Unfollow).
+
+### Objectifs pédagogiques
+- Comprendre la structure d'un projet Expo (routing basé sur les fichiers dans `app/`).
+- Manipuler un composant fonctionnel React Native.
+- Gérer un état local (compteur de followers + statut de suivi).
+- Utiliser des composants de base : `View`, `Text`, `Image`, `Button`.
+- Préparer le terrain pour des améliorations futures (persistance, animations, API, styles avancés).
+
+### Composant développé : ProfileCard
+Localisation : `app/tp1-profile-card/index.tsx`.
+
+Fonctionnalités :
+- Nom : Big Cat.
+- Rôle affiché : Développeur Mobile.
+- Image distante chargée depuis `https://cataas.com/cat` (aléatoire à chaque reload).
+- Compteur de followers dynamique.
+- Bouton qui alterne entre Follow / Unfollow et met à jour le compteur (ne descend jamais sous 0).
+
+### Extrait clé
 ```tsx
 const [followers, setFollowers] = useState(0);
 const [isFollowing, setIsFollowing] = useState(false);
 
 const toggleFollow = () => {
-  setFollowers(prev => isFollowing ? Math.max(0, prev - 1) : prev + 1);
-  setIsFollowing(f => !f);
+   setFollowers(prev => (isFollowing ? Math.max(0, prev - 1) : prev + 1));
+   setIsFollowing(f => !f);
 };
 ```
-
----
-
-## 🎯 Objectifs pédagogiques
-
-- Comprendre la structure d'un projet Expo.
-- Manipuler un composant fonctionnel React Native.
-- Utiliser `useState` pour gérer un état local simple.
-- Mettre à jour l'UI en réponse aux interactions utilisateur.
-- Organiser le code dans le dossier `app/` avec le routing automatique.
-
----
-
-## 🚀 Démarrage rapide
-
-1. Installer les dépendances :
-   ```bash
-   npm install
-   ```
-2. Lancer l'application :
-   ```bash
-   npx expo start
-   ```
-3. Choisir un mode d'exécution :
-   - Build de développement
-   - Émulateur Android
-   - Simulateur iOS
-   - App Expo Go (scan du QR code)
-
----
-
-## 🧭 Navigation & Structure
-
-Le dossier `app/` définit les routes : chaque fichier `.tsx` devient un écran.
-
-Structure (extrait) :
-```text
-app/
-  _layout.tsx              # Layout racine (navigation)
-  (tabs)/                  # Groupe d'onglets
-    _layout.tsx
-    index.tsx
-    explore.tsx
-  tp1-profile-card/
-    index.tsx              # Écran du TP1 (ProfileCard)
-components/               # Composants réutilisables (UI, thèmes, etc.)
-hooks/                    # Hooks personnalisés
-assets/images/            # Images et icônes
-```
-
----
-
-## 🛠 Technologies & Outils
-
-- Expo + Expo Router
-- React Native + TypeScript
-- Hooks React (`useState`)
-- Images distantes
-
----
-
-## 🧪 Pistes d'amélioration (prochaines itérations)
-
-- Persister le nombre de followers (AsyncStorage / SecureStore).
-- Simuler une API (délai / chargement / erreur).
-- Ajouter une animation (scale ou opacity) lors du follow.
-- Afficher un avatar local de fallback si l'image distante échoue.
-- Extraire `ProfileCard` dans `components/` pour réutilisation.
-
----
-
-## 📷 Aperçu
-
-![aperçu](image.png)
-
----
