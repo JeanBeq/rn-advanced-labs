@@ -1,50 +1,112 @@
-# Welcome to your Expo app 👋
+# TP1 — Initialisation du projet & Premier composant
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Bienvenue 👋 Ce dépôt contient l'initialisation d'une application mobile basée sur [Expo](https://expo.dev), utilisant **React Native**, **TypeScript** et le **fichier-based routing** d'Expo Router.
 
-## Get started
+Ce premier TP se concentre sur :
 
-1. Install dependencies
+1. La mise en place de l'environnement Expo.
+2. La création d'un premier écran simple : une carte de profil (`ProfileCard`).
+3. L'introduction à l'état local avec `useState` via un compteur de followers dynamique.
 
+---
+
+## ✅ Composant réalisé : ProfileCard
+
+Fonctionnalités actuelles :
+
+- Affichage d'une image distante (chat) via une URL (API publique cataas.com).
+- Nom du profil : « Big Cat ».
+- Rôle affiché : « Développeur Mobile ».
+- Compteur de followers dynamique (valeur évolutive à chaque interaction).
+- Bouton Follow / Unfollow qui :
+  - Incrémente le compteur lorsqu'on suit le profil.
+  - Décrémente (sans passer sous 0) lorsqu'on se désabonne.
+- Style centré et image avec coins arrondis.
+
+Extrait (simplifié) :
+
+```tsx
+const [followers, setFollowers] = useState(0);
+const [isFollowing, setIsFollowing] = useState(false);
+
+const toggleFollow = () => {
+  setFollowers(prev => isFollowing ? Math.max(0, prev - 1) : prev + 1);
+  setIsFollowing(f => !f);
+};
+```
+
+---
+
+## 🎯 Objectifs pédagogiques
+
+- Comprendre la structure d'un projet Expo.
+- Manipuler un composant fonctionnel React Native.
+- Utiliser `useState` pour gérer un état local simple.
+- Mettre à jour l'UI en réponse aux interactions utilisateur.
+- Organiser le code dans le dossier `app/` avec le routing automatique.
+
+---
+
+## 🚀 Démarrage rapide
+
+1. Installer les dépendances :
    ```bash
    npm install
    ```
-
-2. Start the app
-
+2. Lancer l'application :
    ```bash
    npx expo start
    ```
+3. Choisir un mode d'exécution :
+   - Build de développement
+   - Émulateur Android
+   - Simulateur iOS
+   - App Expo Go (scan du QR code)
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🧭 Navigation & Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Le dossier `app/` définit les routes : chaque fichier `.tsx` devient un écran.
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+Structure (extrait) :
+```text
+app/
+  _layout.tsx              # Layout racine (navigation)
+  (tabs)/                  # Groupe d'onglets
+    _layout.tsx
+    index.tsx
+    explore.tsx
+  tp1-profile-card/
+    index.tsx              # Écran du TP1 (ProfileCard)
+components/               # Composants réutilisables (UI, thèmes, etc.)
+hooks/                    # Hooks personnalisés
+assets/images/            # Images et icônes
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🛠 Technologies & Outils
 
-To learn more about developing your project with Expo, look at the following resources:
+- Expo + Expo Router
+- React Native + TypeScript
+- Hooks React (`useState`)
+- Images distantes
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## 🧪 Pistes d'amélioration (prochaines itérations)
 
-Join our community of developers creating universal apps.
+- Persister le nombre de followers (AsyncStorage / SecureStore).
+- Simuler une API (délai / chargement / erreur).
+- Ajouter une animation (scale ou opacity) lors du follow.
+- Afficher un avatar local de fallback si l'image distante échoue.
+- Extraire `ProfileCard` dans `components/` pour réutilisation.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## 📷 Aperçu
+
+![aperçu](image.png)
+
+---
