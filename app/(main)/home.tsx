@@ -15,6 +15,16 @@ export default function HomeScreen() {
           Voir les détails de l'élément 4458
         </Text>
       </Link>
+      <Link href="/detail/123">
+        <Text style={{ fontSize: 16, marginTop: 20, textAlign: 'center', color: 'blue' }}>
+          Voir les détails de l'élément 123
+        </Text>
+      </Link>
+      <Link href="/detail/abc">
+        <Text style={{ fontSize: 16, marginTop: 20, textAlign: 'center', color: 'blue' }}>
+          Voir les détails de l'élément abc
+        </Text>
+      </Link>
     </View>
   );
 }
