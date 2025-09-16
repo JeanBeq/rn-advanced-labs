@@ -1,50 +1,64 @@
-# Welcome to your Expo app 👋
+# Bienvenue dans votre application Expo 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Ce projet est une application [Expo](https://expo.dev) créée avec [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Get started
+## Commencer
 
-1. Install dependencies
+1. Installer les dépendances
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. Démarrer l'application
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+Dans la sortie du terminal, vous trouverez des options pour ouvrir l'application dans :
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- un [build de développement](https://docs.expo.dev/develop/development-builds/introduction/)
+- un [émulateur Android](https://docs.expo.dev/workflow/android-studio-emulator/)
+- un [simulateur iOS](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), un bac à sable simplifié pour essayer le développement avec Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Vous pouvez commencer à développer en modifiant les fichiers du dossier **app**. Ce projet utilise le [routing basé sur le système de fichiers](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## TP1 — Initialisation du projet & Premier composant : 
+### Arborescence du projet :
+![aperçu](image.png)
 
-When you're ready, run:
+### Résultat obtenu : 
+![alt text](image-1.png)
 
-```bash
-npm run reset-project
+### Description
+Ce premier TP consiste à mettre en place l'application Expo et à créer un premier écran simple : une carte de profil interactive affichant un utilisateur fictif ("Big Cat"). L'objectif est d'introduire l'état local avec `useState` et la mise à jour de l'interface suite à une interaction utilisateur (bouton Follow / Unfollow).
+
+### Objectifs pédagogiques
+- Comprendre la structure d'un projet Expo (routing basé sur les fichiers dans `app/`).
+- Manipuler un composant fonctionnel React Native.
+- Gérer un état local (compteur de followers + statut de suivi).
+- Utiliser des composants de base : `View`, `Text`, `Image`, `Button`.
+- Préparer le terrain pour des améliorations futures (persistance, animations, API, styles avancés).
+
+### Composant développé : ProfileCard
+Localisation : `app/tp1-profile-card/index.tsx`.
+
+Fonctionnalités :
+- Nom : Big Cat.
+- Rôle affiché : Développeur Mobile.
+- Image distante chargée depuis `https://cataas.com/cat` (aléatoire à chaque reload).
+- Compteur de followers dynamique.
+- Bouton qui alterne entre Follow / Unfollow et met à jour le compteur (ne descend jamais sous 0).
+
+### Extrait clé
+```tsx
+const [followers, setFollowers] = useState(0);
+const [isFollowing, setIsFollowing] = useState(false);
+
+const toggleFollow = () => {
+   setFollowers(prev => (isFollowing ? Math.max(0, prev - 1) : prev + 1));
+   setIsFollowing(f => !f);
+};
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
