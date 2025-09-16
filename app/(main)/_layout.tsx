@@ -15,6 +15,12 @@ export default function TabLayout() {
           title: 'Profil',
         }}
       />
+      <Tabs.Screen
+        name="detail/[id]"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

@@ -1,4 +1,5 @@
 import { Text, View } from 'react-native';
+import { Link } from 'expo-router';
 
 export default function HomeScreen() {
   return (
@@ -9,6 +10,11 @@ export default function HomeScreen() {
       <Text style={{ fontSize: 16, marginTop: 20, textAlign: 'center' }}>
         Bienvenue dans les laboratoires React Native !
       </Text>
+      <Link href="/detail/4458">
+        <Text style={{ fontSize: 16, marginTop: 20, textAlign: 'center', color: 'blue' }}>
+          Voir les détails de l'élément 4458
+        </Text>
+      </Link>
     </View>
   );
 }
