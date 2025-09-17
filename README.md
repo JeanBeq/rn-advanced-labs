@@ -505,3 +505,5 @@ export const robotSchema = z.object({
 ### 🔗 Navigation depuis l'accueil
 
 Un lien "🤖 Gestionnaire de Robots" a été ajouté dans la section TP4-A de la page d'accueil, permettant l'accès direct à la liste des robots.
+
+## TP4-B — Redux Toolkit : CRUD “Robots” (liste + formulaire + delete)
