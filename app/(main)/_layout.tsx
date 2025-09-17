@@ -16,26 +16,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="TP3-forms/formik"
-        options={{
-          title: 'Formik',
-        }}
-      />
-      <Tabs.Screen
-        name="TP3-forms/rhf"
-        options={{
-          title: 'RHF',
-        }}
-      />
-      <Tabs.Screen
-        name="tp4A-robots/index"
+        name="tp4A-robots"
         options={{
           title: 'Robots',
         }}
       />
       {/* Masquer tous les autres écrans */}
       <Tabs.Screen
-        name="tp4A-robots"
+        name="TP3-forms/formik"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="TP3-forms/rhf"
         options={{
           href: null,
         }}
