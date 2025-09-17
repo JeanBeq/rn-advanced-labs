@@ -41,7 +41,8 @@
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.5.1",
     "yup": "^1.7.0",
-    "zod": "^4.1.9"
+    "zod": "^4.1.9",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
