@@ -27,10 +27,10 @@ Vous pouvez commencer à développer en modifiant les fichiers du dossier **app*
 
 ## TP1 — Initialisation du projet & Premier composant : 
 ### Arborescence du projet :
-![aperçu](image.png)
+![aperçu](img-readme/image.png)
 
 ### Résultat obtenu : 
-![alt text](image-4.png)
+![alt text](img-readme/image-4.png)
 
 ### Description
 Ce premier TP consiste à mettre en place l'application Expo et à créer un premier écran simple : une carte de profil interactive affichant un utilisateur fictif ("Big Cat"). L'objectif est d'introduire l'état local avec `useState` et la mise à jour de l'interface suite à une interaction utilisateur (bouton Follow / Unfollow).
@@ -39,7 +39,7 @@ Ce premier TP consiste à mettre en place l'application Expo et à créer un pre
 - Comprendre la structure d'un projet Expo (routing basé sur les fichiers dans `app/`).
 - Manipuler un composant fonctionnel React Native.
 - Gérer un état local (compteur de followers + statut de suivi).
-- Utiliser des composants de base : `View`, `Text`, `Image`, `Button`.
+- Utiliser des composants de base : `View`, `Text`, `img-readme/image`, `Button`.
 - Préparer le terrain pour des améliorations futures (persistance, animations, API, styles avancés).
 
 ### Composant développé : ProfileCard
@@ -48,7 +48,7 @@ Localisation : `app/tp1-profile-card/index.tsx`.
 Fonctionnalités :
 - Nom : Big Cat.
 - Rôle affiché : Développeur Mobile.
-- Image distante chargée depuis `https://cataas.com/cat` (aléatoire à chaque reload).
+- img-readme/image distante chargée depuis `https://cataas.com/cat` (aléatoire à chaque reload).
 - Compteur de followers dynamique.
 - Bouton qui alterne entre Follow / Unfollow et met à jour le compteur (ne descend jamais sous 0).
 
@@ -166,9 +166,9 @@ Si erreur → fallback vers `/(main)/home`.
 
 ### Capture d'écran
 Page d'accueil : 
-![alt text](image-2.png)
+![alt text](img-readme/image-2.png)
 Page détail : 
-![alt text](image-3.png)
+![alt text](img-readme/image-3.png)
 ---
 Fin de la section **TP2**.
 
@@ -293,9 +293,215 @@ Chaque implémentation dispose de ses propres composants dans `components/` :
 
 ### Capture d'écrans : 
 Page d'accueil :
-![alt text](image-5.png)
+![alt text](img-readme/image-5.png)
 1er formulaire : 
-![alt text](image-6.png)
+![alt text](img-readme/image-6.png)
 2ème formulaire :
-![alt text](image-7.png)
+![alt text](img-readme/image-7.png)
 ---
+
+## TP4-A — Zustand : CRUD "Robots" (liste + formulaire + delete)
+
+### 🎯 Objectifs réalisés
+
+Ce TP implémente un système CRUD complet pour la gestion de robots en utilisant **Zustand** comme store global, **React Hook Form + Zod** pour la validation, et **Expo Router** pour la navigation.
+
+### 📋 Modèle Robot & Contraintes métier
+
+**Structure Robot :**
+```typescript
+interface Robot {
+  id: string;        // UUID généré automatiquement
+  name: string;      // min 2 caractères, obligatoire, unique
+  label: string;     // min 3 caractères, obligatoire
+  year: number;      // entier entre 1950 et année courante
+  type: RobotType;   // enum: industrial | service | medical | educational | other
+}
+```
+
+**Contraintes implémentées :**
+- ✅ Unicité du `name` (vérification en temps réel)
+- ✅ Validation `year` : 1950 ≤ année ≤ 2025
+- ✅ Sélection `type` via sélecteur natif (ActionSheet iOS / Alert Android)
+
+### 🏗️ Architecture & Arborescence
+
+```
+app/(main)/tp4A-robots/
+  ├── index.tsx            # 📋 Liste des robots (triée par année)
+  ├── create.tsx           # ➕ Écran création
+  ├── edit/[id].tsx        # ✏️ Écran édition
+  └── _layout.tsx          # 🧭 Navigation Stack
+
+store/
+  └── robotsStore.ts       # 🏪 Store Zustand + persistance
+
+validation/
+  └── robotSchema.ts       # ✅ Schema Zod + contraintes
+
+types/
+  └── robot.ts            # 🔧 Types TypeScript + enum
+
+components/
+  ├── RobotForm.tsx        # 📝 Formulaire réutilisable
+  └── RobotListItem.tsx    # 📄 Item de liste + actions
+```
+
+### 🗂️ Choix technique : React Hook Form + Zod
+
+**Pourquoi RHF + Zod au lieu de Formik + Yup ?**
+
+| Critère | React Hook Form + Zod | Formik + Yup |
+|---|---|---|
+| **Performance** | ✅ Moins de re-renders | ❌ Re-render à chaque saisie |
+| **TypeScript** | ✅ Intégration native avec Zod | ⚠️ Types séparés |
+| **Bundle size** | ✅ Plus léger | ❌ Plus lourd |
+| **API moderne** | ✅ Hooks + composition | ⚠️ Render props |
+| **Validation async** | ✅ Intégrée | ⚠️ Plus complexe |
+
+### 🏪 Store Zustand avec persistance
+
+**État global :**
+```typescript
+interface RobotsState {
+  robots: Robot[];
+  selectedId?: string;
+  
+  // Actions CRUD
+  create: (robotInput: RobotInput) => Robot;
+  update: (id: string, robotInput: RobotInput) => Robot | null;
+  remove: (id: string) => boolean;
+  getById: (id: string) => Robot | undefined;
+  
+  // Utilitaires
+  getAllRobots: () => Robot[];
+  isNameUnique: (name: string, excludeId?: string) => boolean;
+}
+```
+
+**Persistance AsyncStorage :**
+- Middleware `persist` avec `createJSONStorage`
+- Sauvegarde automatique après chaque modification
+- Restauration au redémarrage de l'app
+
+### 🛣️ Routes de navigation
+
+| Route | Écran | Description |
+|---|---|---|
+| `/tp4A-robots` | Liste | Affichage des robots + bouton flottant |
+| `/tp4A-robots/create` | Création | Formulaire en mode modal |
+| `/tp4A-robots/edit/[id]` | Édition | Formulaire pré-rempli en mode modal |
+
+**Navigation configurée :**
+- Tab "Robots" dans la navigation principale
+- Retour automatique après création/édition
+- Gestion des erreurs (robot introuvable)
+
+### ✅ Validation complète
+
+**Schema Zod implémenté :**
+```typescript
+export const robotSchema = z.object({
+  name: z.string()
+    .min(2, 'Min 2 caractères')
+    .max(50, 'Max 50 caractères')
+    .trim(),
+  label: z.string()
+    .min(3, 'Min 3 caractères')
+    .max(100, 'Max 100 caractères'),
+  year: z.number()
+    .int('Doit être un entier')
+    .min(1950, 'Année min: 1950')
+    .max(2025, 'Année max: 2025'),
+  type: z.nativeEnum(RobotType)
+});
+```
+
+**Validation d'unicité dynamique :**
+- Vérification en temps réel du nom
+- Exclusion du robot actuel en mode édition
+- Messages d'erreur contextuels
+
+### 📱 UX Mobile optimisée
+
+**Fonctionnalités implémentées :**
+- ✅ `KeyboardAvoidingView` : clavier ne masque pas les champs
+- ✅ Navigation entre champs : `returnKeyType="next"` + `onSubmitEditing`
+- ✅ Bouton submit désactivé si formulaire invalide
+- ✅ Feedback haptique : vibrations sur succès/erreur (iOS/Android)
+- ✅ Sélecteur type natif : ActionSheet (iOS) / Alert (Android)
+- ✅ Bouton flottant pour création (FAB avec ombre)
+
+### 📋 Fonctionnalités de la liste
+
+**Affichage :**
+- Tri automatique par année (plus récent en premier)
+- Indicateur de tri : "X robots (trié par année)"
+- Design cards avec élévation/ombre
+- États vides avec CTA de création
+
+**Actions par robot :**
+- **✏️ Éditer** : Navigation vers `/tp4A-robots/edit/[id]`
+- **🗑️ Supprimer** : Confirmation + suppression + feedback
+
+### 🧪 Tests manuels réalisés
+
+**✅ CREATE - Création de robot :**
+- ✅ Cas réussite : Robot créé → apparaît dans la liste
+- ✅ Cas échec nom dupliqué : Erreur "Ce nom existe déjà"
+- ✅ Cas échec année invalide : Erreur "Année min: 1950"
+- ✅ Validation temps réel : bouton désactivé si invalide
+
+**✅ UPDATE - Modification de robot :**
+- ✅ Chargement valeurs existantes dans le formulaire
+- ✅ Modification label/type → sauvegarde → liste mise à jour
+- ✅ Navigation retour automatique après succès
+
+**✅ DELETE - Suppression de robot :**
+- ✅ Confirmation avant suppression
+- ✅ Robot supprimé → disparaît de la liste
+- ✅ Feedback haptique + message de confirmation
+
+**✅ PERSISTANCE - Sauvegarde locale :**
+- ✅ Créer 2 robots → fermer app → rouvrir → robots présents
+- ✅ Modifications persistées après redémarrage
+- ✅ AsyncStorage fonctionnel
+
+**✅ UX - Expérience utilisateur :**
+- ✅ Clavier ne masque pas le bouton submit
+- ✅ Submit désactivé tant que formulaire invalide
+- ✅ Navigation fluide entre les champs
+- ✅ Sélecteur type fonctionnel sur iOS/Android
+
+### 📦 Dépendances ajoutées
+
+```json
+{
+  "zustand": "^5.0.0",
+  "react-hook-form": "^7.62.0",
+  "@hookform/resolvers": "^5.2.2",
+  "zod": "^4.1.9",
+  "@react-native-async-storage/async-storage": "^1.25.0"
+}
+```
+
+### 📸 Captures d'écran
+
+**Liste des robots :**
+<!-- TODO: Ajouter capture liste robots -->
+
+**Écran de création :**
+<!-- TODO: Ajouter capture formulaire création -->
+
+**Écran d'édition :**
+<!-- TODO: Ajouter capture formulaire édition -->
+
+**Sélecteur de type (iOS) :**
+<!-- TODO: Ajouter capture ActionSheet iOS -->
+
+**Validation d'erreurs :**
+<!-- TODO: Ajouter capture erreurs validation -->
+
+### 🔗 Navigation depuis l'accueil
+
+Un lien "🤖 Gestionnaire de Robots" a été ajouté dans la section TP4-A de la page d'accueil, permettant l'accès direct à la liste des robots.

@@ -27,7 +27,19 @@ export default function TabLayout() {
           title: 'RHF',
         }}
       />
+      <Tabs.Screen
+        name="tp4A-robots/index"
+        options={{
+          title: 'Robots',
+        }}
+      />
       {/* Masquer tous les autres écrans */}
+      <Tabs.Screen
+        name="tp4A-robots"
+        options={{
+          href: null,
+        }}
+      />
       <Tabs.Screen
         name="detail/[id]"
         options={{

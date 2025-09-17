@@ -26,6 +26,16 @@ export default function HomeScreen() {
         </Link>
       </View>
 
+      {/* Section TP4 - Robots */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>TP4-A - CRUD Robots + Zustand</Text>
+        <Link href="/tp4A-robots" style={styles.linkContainer}>
+          <Text style={styles.linkText}>
+            🤖 Gestionnaire de Robots
+          </Text>
+        </Link>
+      </View>
+
       {/* Section Navigation existante */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Navigation (TP2)</Text>
