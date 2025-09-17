@@ -1,6 +1,8 @@
 import { Stack } from 'expo-router';
+import { usePersistCurrentUrl } from '../hooks/use-persisted-url';
 
 export default function RootLayout() {
+  usePersistCurrentUrl();
   return (
     <Stack
       screenOptions={{
