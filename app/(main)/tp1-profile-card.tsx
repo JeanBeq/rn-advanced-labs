@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button, Image, Text, View } from 'react-native';
+import { Link } from 'expo-router';
 
 export default function ProfileCard() {
     const [followers, setFollowers] = useState<number>(0);
@@ -16,7 +17,7 @@ export default function ProfileCard() {
     };
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#222831' }}>
             <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10, color: '#ffffffff' }}>
                 Big Cat
             </Text>
@@ -37,6 +38,11 @@ export default function ProfileCard() {
                     accessibilityLabel={isFollowing ? 'Se désabonner' : 'Suivre ce profil'}
                 />
             </View>
+            <Link href="/detail/4458">
+                <Text style={{ fontSize: 16, marginTop: 20, textAlign: 'center', color: 'white' }}>
+                    Voir les détails de l'élément <Text style={{ textDecorationLine: 'underline' }}>4458</Text>
+                </Text>
+            </Link>
         </View>
     );
 }
