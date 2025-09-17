@@ -16,7 +16,32 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="TP3-forms/formik"
+        options={{
+          title: 'Formik',
+        }}
+      />
+      <Tabs.Screen
+        name="TP3-forms/rhf"
+        options={{
+          title: 'RHF',
+        }}
+      />
+      {/* Masquer tous les autres écrans */}
+      <Tabs.Screen
         name="detail/[id]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="tp2-navigation"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="TP3-forms"
         options={{
           href: null,
         }}

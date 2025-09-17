@@ -1,30 +1,94 @@
-import { Text, View } from 'react-native';
 import { Link } from 'expo-router';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>
+    <View style={styles.container}>
+      <Text style={styles.title}>
         Page d'accueil
       </Text>
-      <Text style={{ fontSize: 16, marginTop: 20, textAlign: 'center' }}>
+      <Text style={styles.subtitle}>
         Bienvenue dans les laboratoires React Native !
       </Text>
-      <Link href="/detail/4458">
-        <Text style={{ fontSize: 16, marginTop: 20, textAlign: 'center', color: 'blue' }}>
-          Voir les détails de l'élément 4458
-        </Text>
-      </Link>
-      <Link href="/detail/123">
-        <Text style={{ fontSize: 16, marginTop: 20, textAlign: 'center', color: 'blue' }}>
-          Voir les détails de l'élément 123
-        </Text>
-      </Link>
-      <Link href="/detail/abc">
-        <Text style={{ fontSize: 16, marginTop: 20, textAlign: 'center', color: 'blue' }}>
-          Voir les détails de l'élément abc
-        </Text>
-      </Link>
+      
+      {/* Section TP3 - Formulaires */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>TP3 - Formulaires avancés</Text>
+        <Link href="/TP3-forms/formik" style={styles.linkContainer}>
+          <Text style={styles.linkText}>
+            📝 Formulaire avec Formik + Yup
+          </Text>
+        </Link>
+        <Link href="/TP3-forms/rhf" style={styles.linkContainer}>
+          <Text style={styles.linkText}>
+            🎯 Formulaire avec React Hook Form + Zod
+          </Text>
+        </Link>
+      </View>
+
+      {/* Section Navigation existante */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Navigation (TP2)</Text>
+        <Link href="/detail/4458" style={styles.linkContainer}>
+          <Text style={styles.linkText}>
+            Voir les détails de l'élément 4458
+          </Text>
+        </Link>
+        <Link href="/detail/123" style={styles.linkContainer}>
+          <Text style={styles.linkText}>
+            Voir les détails de l'élément 123
+          </Text>
+        </Link>
+        <Link href="/detail/abc" style={styles.linkContainer}>
+          <Text style={styles.linkText}>
+            Voir les détails de l'élément abc
+          </Text>
+        </Link>
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#666',
+  },
+  section: {
+    marginBottom: 30,
+    alignItems: 'center',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 15,
+    color: '#333',
+  },
+  linkContainer: {
+    marginVertical: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    minWidth: 280,
+  },
+  linkText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: 'white',
+    fontWeight: '500',
+  },
+});
