@@ -2,23 +2,33 @@ import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Accueil',
+          title: '🏠 Accueil',
         }}
       />
       <Tabs.Screen
         name="tp1-profile-card"
         options={{
-          title: 'Profil',
+          title: '👤 Profil',
         }}
       />
       <Tabs.Screen
         name="tp4A-robots"
         options={{
-          title: 'Robots',
+          title: '🤖 Zustand',
+        }}
+      />
+      <Tabs.Screen
+        name="tp4b-robots-rtk"
+        options={{
+          title: '🔧 Redux',
         }}
       />
       {/* Masquer tous les autres écrans */}
