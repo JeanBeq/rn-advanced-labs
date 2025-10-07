@@ -15,10 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { createRobot as createRobotAction, updateRobot as updateRobotAction } from '../features/robots/robotsSlice';
-import { selectRobots } from '../features/robots/selectors';
-import { useRobotsStore } from '../store/robotsStore';
+import * as robotRepo from '../services/robotRepo';
 import { Robot, ROBOT_TYPE_LABELS, ROBOT_TYPES, RobotType } from '../types/robot';
 import {
   createRobotSchemaWithUniqueValidation,
@@ -28,14 +25,15 @@ import {
 interface RobotFormProps {
   robot?: Robot;
   onSuccess?: () => void;
-  useRedux?: boolean;
+  allRobots?: Robot[]; // Liste pour validation d'unicité
 }
 
-export const RobotForm: React.FC<RobotFormProps> = ({ robot, onSuccess, useRedux = false }) => {
+export const RobotForm: React.FC<RobotFormProps> = ({ robot, onSuccess, allRobots = [] }) => {
   const isEditing = !!robot;
   const labelInputRef = useRef<TextInput>(null);
   const yearInputRef = useRef<TextInput>(null);
 
+  // Sélecteur de type natif
   const showTypeSelector = (currentValue: RobotType, onChange: (value: RobotType) => void) => {
     if (Platform.OS === 'ios') {
       const options = [...ROBOT_TYPES.map(type => ROBOT_TYPE_LABELS[type]), 'Annuler'];
@@ -62,15 +60,7 @@ export const RobotForm: React.FC<RobotFormProps> = ({ robot, onSuccess, useRedux
     }
   };
   
-  const dispatch = useAppDispatch();
-  const allRobotsRedux = useAppSelector(selectRobots);
-  
-  const createRobotZustand = useRobotsStore((state) => state.create);
-  const updateRobotZustand = useRobotsStore((state) => state.update);
-  const getAllRobotsZustand = useRobotsStore((state) => state.getAllRobots);
-  
-  const allRobots = useRedux ? allRobotsRedux : getAllRobotsZustand();
-  
+  // Validation avec vérification d'unicité du nom
   const validationSchema = createRobotSchemaWithUniqueValidation(
     allRobots, 
     robot?.id
@@ -108,24 +98,17 @@ export const RobotForm: React.FC<RobotFormProps> = ({ robot, onSuccess, useRedux
     }
   }, [robot, reset]);
 
+  // Soumission du formulaire
   const onSubmit = async (data: RobotFormData) => {
     try {
-      if (useRedux) {
-        if (isEditing && robot) {
-          dispatch(updateRobotAction({ id: robot.id, changes: data }));
-        } else {
-          dispatch(createRobotAction(data));
-        }
+      if (isEditing && robot) {
+        await robotRepo.update(robot.id, data);
       } else {
-        if (isEditing && robot) {
-          updateRobotZustand(robot.id, data);
-        } else {
-          createRobotZustand(data);
-        }
+        await robotRepo.create(data);
       }
       
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Succès', isEditing ? 'Robot modifié avec succès !' : 'Robot créé avec succès !', [
+      Alert.alert('Succès', isEditing ? 'Robot modifié !' : 'Robot créé !', [
         { 
           text: 'OK', 
           onPress: () => {

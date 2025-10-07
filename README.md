@@ -601,3 +601,234 @@ Création d'un robot :
 Création d'un robot avec erreur de validation :
 ![alt text](img-readme/image_err.png)
 ![alt text](img-readme/image_err2.png)
+
+# TP5 — Stockage local avec SQLite : Robots Offline
+
+Application React Native avec gestion complète de robots stockés localement dans une base SQLite.
+
+---
+
+## 🎯 Objectifs atteints
+
+✅ Base de données SQLite locale créée et gérée  
+✅ Système de migrations versionnées (v1, v2, v3) avec `PRAGMA user_version`  
+✅ CRUD complet (Create, Read, Update, Delete)  
+✅ Export JSON des données  
+✅ Interface utilisateur réactive avec rechargement automatique  
+✅ Validation stricte des données (nom unique, année valide)  
+
+---
+
+## 📦 Dépendances et leur rôle
+
+### Dépendances principales
+- **expo-sqlite** : Gestion de la base de données SQLite locale
+- **expo-file-system** : Export/import de fichiers JSON
+- **react-native-uuid** : Génération d'identifiants uniques pour les robots
+
+### Stack de formulaires
+- **react-hook-form** : Gestion performante des formulaires avec validation en temps réel
+- **@hookform/resolvers** : Intégration des schémas de validation avec react-hook-form
+- **zod** : Validation de schéma TypeScript-first, garantit la conformité des données
+
+### Fonctionnement offline
+- Toutes les données sont stockées localement dans SQLite
+- Aucune dépendance à un serveur distant
+- Persistance complète entre les redémarrages
+
+---
+
+## 🗄️ Structure de la base de données
+
+### Table `robots`
+
+| Colonne | Type | Contraintes | Description |
+|---------|------|-------------|-------------|
+| `id` | TEXT | PRIMARY KEY | Identifiant unique UUID |
+| `name` | TEXT | UNIQUE, NOT NULL | Nom du robot (min 2 caractères) |
+| `label` | TEXT | NOT NULL | Description (min 3 caractères) |
+| `year` | INTEGER | NOT NULL | Année de création (1950-2025) |
+| `type` | TEXT | CHECK, NOT NULL | Type: industrial, service, medical, educational, other |
+| `created_at` | TEXT | NOT NULL | Date ISO de création |
+| `updated_at` | TEXT | NOT NULL | Date ISO de dernière modification |
+| `archived` | INTEGER | DEFAULT 0 | Indicateur de suppression logique (0=actif, 1=archivé) |
+
+### Index pour performance
+- `idx_robots_name` : Index sur la colonne `name` pour accélérer les recherches
+- `idx_robots_year` : Index sur la colonne `year` pour accélérer les tris
+
+---
+
+## 🔄 Système de migrations
+
+### Stratégie de versioning
+- Utilisation de `PRAGMA user_version` pour tracker la version du schéma
+- Migrations incrémentales appliquées automatiquement au démarrage
+- Pas de perte de données lors des mises à jour
+
+### Migrations implémentées
+
+#### **Migration 001** : Initialisation
+```sql
+CREATE TABLE IF NOT EXISTS robots (
+  id TEXT PRIMARY KEY NOT NULL,
+  name TEXT NOT NULL UNIQUE,
+  label TEXT NOT NULL,
+  year INTEGER NOT NULL,
+  type TEXT NOT NULL CHECK(type IN ('industrial', 'service', 'medical', 'educational', 'other')),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+```
+
+#### **Migration 002** : Index de performance
+```sql
+CREATE INDEX IF NOT EXISTS idx_robots_name ON robots(name);
+CREATE INDEX IF NOT EXISTS idx_robots_year ON robots(year);
+```
+
+#### **Migration 003** : Suppression logique
+```sql
+ALTER TABLE robots ADD COLUMN archived INTEGER DEFAULT 0;
+```
+
+### Fonctionnement
+1. Au démarrage, `initDatabase()` est appelé
+2. Le système vérifie `PRAGMA user_version`
+3. Les migrations manquantes sont appliquées séquentiellement
+4. La version est incrémentée après chaque migration
+5. Logs console pour tracer l'évolution
+
+---
+
+## 📂 Architecture du code
+
+```
+app/(main)/TP5-robots-db/
+  ├── _layout.tsx          # Configuration Stack Navigator
+  ├── index.tsx            # Liste avec recherche, delete, export
+  ├── create.tsx           # Écran création robot
+  └── edit/[id].tsx        # Écran édition robot (param dynamique)
+
+db/
+  ├── index.ts             # Gestionnaire DB + runner de migrations
+  └── migrations/          # Fichiers SQL (documentés)
+      ├── 001_init.sql
+      ├── 002_add_indexes.sql
+      └── 003_add_archived.sql
+
+services/
+  └── robotRepo.ts         # Repository (DAO) - toutes requêtes SQL
+
+components/
+  └── RobotForm.tsx        # Formulaire réutilisable (create/edit)
+
+types/
+  └── robot.ts             # Types TypeScript (Robot, RobotType, etc.)
+
+validation/
+  └── robotSchema.ts       # Schéma Zod avec validation unicité
+```
+
+---
+
+## ✨ Fonctionnalités implémentées
+
+### CRUD complet ✅
+- **CREATE** : Création avec validation temps réel (nom unique, année valide, type requis)
+- **READ** : Liste paginée (limit/offset), recherche par nom, tri par name/year
+- **UPDATE** : Modification avec mise à jour automatique de `updated_at`
+- **DELETE** : Suppression définitive (hard delete) avec confirmation
+
+## 🧪 Tests manuels effectués
+
+### 1. Migrations versionnées ✅
+- **Test** : Premier lancement de l'app
+  - ✅ Console affiche "Version actuelle de la DB: 0"
+  - ✅ Migrations 1, 2, 3 appliquées successivement
+  - ✅ Table `robots` créée avec tous les champs
+  
+- **Test** : Redémarrage de l'app
+  - ✅ Console affiche "Version actuelle de la DB: 3"
+  - ✅ Aucune migration réappliquée
+  - ✅ Données préservées
+
+- **Test** : Ajout d'une migration v4 (simulation)
+  - ✅ Seule la nouvelle migration s'exécute
+  - ✅ Pas de perte de données existantes
+
+### 2. CRUD complet ✅
+- **CREATE** :
+  - ✅ Création robot "R2-D2", type: industrial, année: 2024
+  - ✅ Validation bloque nom < 2 caractères
+  - ✅ Validation bloque nom déjà existant
+  - ✅ Validation bloque année < 1950 ou > 2025
+  - ✅ Message succès + retour liste automatique
+  
+- **READ** :
+  - ✅ Liste affiche tous les robots par ordre alphabétique
+  - ✅ Affichage: nom (gras), label, année
+  - ✅ Chaque item a boutons "Éditer" et "Supprimer"
+  
+- **UPDATE** :
+  - ✅ Modification nom: validation unicité respectée
+  - ✅ Modification année: validation 1950-2025 appliquée
+  - ✅ Champ `updated_at` mis à jour automatiquement
+  - ✅ Retour liste avec données actualisées
+  
+- **DELETE** :
+  - ✅ Alert de confirmation apparaît
+  - ✅ Suppression effective en base
+  - ✅ Liste rafraîchie immédiatement
+
+### 3. Persistance ✅
+- **Test** : Créer 3 robots → Fermer app → Rouvrir
+  - ✅ Les 3 robots sont toujours présents
+  - ✅ Dates `created_at` et `updated_at` préservées
+  - ✅ Ordre de tri conservé
+
+### 4. Export JSON ✅
+- **Test** : Créer 5 robots → Cliquer "Exporter JSON"
+  - ✅ Alert succès avec chemin fichier
+  - ✅ Fichier `robots_export.json` créé dans DocumentDirectory
+  - ✅ Contenu : array JSON valide avec les 5 robots
+  - ✅ Tous les champs présents (id, name, label, year, type, dates, archived)
+
+### 5. Recherche et filtrage ✅
+- **Test** : Taper "R2" dans la barre de recherche
+  - ✅ Résultats filtrés en temps réel
+  - ✅ Délai de 300ms respecté (pas de requête à chaque frappe)
+  - ✅ Requête SQL LIKE paramétrée (`%R2%`)
+  
+- **Test** : Effacer la recherche
+  - ✅ Liste complète réapparaît
+
+### 6. Rechargement automatique ✅
+- **Test** : Créer robot → Revenir sur liste
+  - ✅ `useFocusEffect` déclenché
+  - ✅ Nouveau robot visible sans action manuelle
+  
+- **Test** : Pull-to-refresh
+  - ✅ Glisser vers le bas active le spinner
+  - ✅ Données rechargées depuis SQLite
+
+---
+
+## 📸 Captures d'écran
+création d'un robot :
+![alt text](/img-readme/image124.png)
+
+robot créé :
+![alt text](/img-readme/image125.png)
+
+Liste robots :
+![alt text](/img-readme/image126.png)
+
+Export :
+![alt text](/img-readme/image127.png)
+
+Recherche :
+![alt text](/img-readme/image128.png)
+
+Suppression :
+![alt text](/img-readme/image129.png)

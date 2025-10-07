@@ -14,6 +14,9 @@ export interface Robot {
   label: string;
   year: number;
   type: RobotType;
+  created_at: string;
+  updated_at: string;
+  archived?: boolean;
 }
 
 export interface RobotInput {
