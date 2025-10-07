@@ -1,9 +1,9 @@
 import { Link } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.container}>
       <Text style={styles.title}>
         Page d'accueil
       </Text>
@@ -41,6 +41,16 @@ export default function HomeScreen() {
         </Link>
       </View>
 
+      {/* Section TP5 - Base de données SQLite */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>TP5 - Base de données SQLite</Text>
+        <Link href="/TP5-robots-db" style={[styles.linkContainer, { backgroundColor: '#10B981' }]}>
+          <Text style={styles.linkText}>
+            💾 Robots Offline (SQLite)
+          </Text>
+        </Link>
+      </View>
+
       {/* Section Navigation existante */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Navigation (TP2)</Text>
@@ -60,16 +70,18 @@ export default function HomeScreen() {
           </Text>
         </Link>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
-    justifyContent: 'center',
+  },
+  container: {
+    paddingVertical: 40,
+    paddingHorizontal: 20,
     alignItems: 'center',
-    padding: 20,
   },
   title: {
     fontSize: 28,
