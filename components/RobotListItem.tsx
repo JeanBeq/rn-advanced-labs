@@ -1,21 +1,25 @@
 import { Link } from 'expo-router';
 import React from 'react';
 import {
-    Alert,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+import { useAppDispatch } from '../app/hooks';
+import { deleteRobot } from '../features/robots/robotsSlice';
 import { useRobotsStore } from '../store/robotsStore';
 import { Robot, ROBOT_TYPE_LABELS } from '../types/robot';
 
 interface RobotListItemProps {
   robot: Robot;
+  useRedux?: boolean;
 }
 
-export const RobotListItem: React.FC<RobotListItemProps> = ({ robot }) => {
-  const removeRobot = useRobotsStore((state) => state.remove);
+export const RobotListItem: React.FC<RobotListItemProps> = ({ robot, useRedux = false }) => {
+  const dispatch = useAppDispatch();
+  const removeRobotZustand = useRobotsStore((state) => state.remove);
 
   const handleDelete = () => {
     Alert.alert(
@@ -29,11 +33,21 @@ export const RobotListItem: React.FC<RobotListItemProps> = ({ robot }) => {
         {
           text: 'Supprimer',
           style: 'destructive',
-          onPress: () => removeRobot(robot.id),
+          onPress: () => {
+            if (useRedux) {
+              dispatch(deleteRobot(robot.id));
+            } else {
+              removeRobotZustand(robot.id);
+            }
+          },
         },
       ]
     );
   };
+
+  const editPath = useRedux 
+    ? `/(main)/tp4b-robots-rtk/edit/${robot.id}` 
+    : `/(main)/tp4A-robots/edit/${robot.id}`;
 
   return (
     <View style={styles.container}>
@@ -52,7 +66,7 @@ export const RobotListItem: React.FC<RobotListItemProps> = ({ robot }) => {
       </View>
       
       <View style={styles.actions}>
-        <Link href={`/(main)/tp4A-robots/edit/${robot.id}` as any} asChild>
+        <Link href={editPath as any} asChild>
           <TouchableOpacity style={[styles.button, styles.editButton]}>
             <Text style={styles.editButtonText}>✏️ Éditer</Text>
           </TouchableOpacity>
