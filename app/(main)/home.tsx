@@ -28,10 +28,15 @@ export default function HomeScreen() {
 
       {/* Section TP4 - Robots */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>TP4-A - CRUD Robots + Zustand</Text>
+        <Text style={styles.sectionTitle}>TP4 - CRUD Robots</Text>
         <Link href="/tp4A-robots" style={styles.linkContainer}>
           <Text style={styles.linkText}>
-            🤖 Gestionnaire de Robots
+            🤖 Gestionnaire Robots (Zustand)
+          </Text>
+        </Link>
+        <Link href="/tp4b-robots-rtk" style={[styles.linkContainer, { backgroundColor: '#8B5CF6' }]}>
+          <Text style={styles.linkText}>
+            🔧 Gestionnaire Robots (Redux Toolkit)
           </Text>
         </Link>
       </View>

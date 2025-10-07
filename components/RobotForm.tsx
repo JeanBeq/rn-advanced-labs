@@ -4,35 +4,38 @@ import { router } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
-    ActionSheetIOS,
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActionSheetIOS,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { createRobot as createRobotAction, updateRobot as updateRobotAction } from '../features/robots/robotsSlice';
+import { selectRobots } from '../features/robots/selectors';
 import { useRobotsStore } from '../store/robotsStore';
 import { Robot, ROBOT_TYPE_LABELS, ROBOT_TYPES, RobotType } from '../types/robot';
 import {
-    createRobotSchemaWithUniqueValidation,
-    RobotFormData
+  createRobotSchemaWithUniqueValidation,
+  RobotFormData
 } from '../validation/robotSchema';
 
 interface RobotFormProps {
-  robot?: Robot; // Si fourni, on est en mode édition
+  robot?: Robot;
   onSuccess?: () => void;
+  useRedux?: boolean;
 }
 
-export const RobotForm: React.FC<RobotFormProps> = ({ robot, onSuccess }) => {
+export const RobotForm: React.FC<RobotFormProps> = ({ robot, onSuccess, useRedux = false }) => {
   const isEditing = !!robot;
   const labelInputRef = useRef<TextInput>(null);
   const yearInputRef = useRef<TextInput>(null);
 
-  // Alternative au Picker: ActionSheet ou sélecteur simple
   const showTypeSelector = (currentValue: RobotType, onChange: (value: RobotType) => void) => {
     if (Platform.OS === 'ios') {
       const options = [...ROBOT_TYPES.map(type => ROBOT_TYPE_LABELS[type]), 'Annuler'];
@@ -59,19 +62,20 @@ export const RobotForm: React.FC<RobotFormProps> = ({ robot, onSuccess }) => {
     }
   };
   
-  // Store actions
-  const createRobot = useRobotsStore((state) => state.create);
-  const updateRobot = useRobotsStore((state) => state.update);
-  const getAllRobots = useRobotsStore((state) => state.getAllRobots);
+  const dispatch = useAppDispatch();
+  const allRobotsRedux = useAppSelector(selectRobots);
   
-  // Schema de validation avec unicité du nom
-  const allRobots = getAllRobots();
+  const createRobotZustand = useRobotsStore((state) => state.create);
+  const updateRobotZustand = useRobotsStore((state) => state.update);
+  const getAllRobotsZustand = useRobotsStore((state) => state.getAllRobots);
+  
+  const allRobots = useRedux ? allRobotsRedux : getAllRobotsZustand();
+  
   const validationSchema = createRobotSchemaWithUniqueValidation(
     allRobots, 
     robot?.id
   );
 
-  // Configuration du formulaire
   const {
     control,
     handleSubmit,
@@ -93,7 +97,6 @@ export const RobotForm: React.FC<RobotFormProps> = ({ robot, onSuccess }) => {
     },
   });
 
-  // Reset si le robot change (en cas de réutilisation du composant)
   useEffect(() => {
     if (robot) {
       reset({
@@ -107,38 +110,35 @@ export const RobotForm: React.FC<RobotFormProps> = ({ robot, onSuccess }) => {
 
   const onSubmit = async (data: RobotFormData) => {
     try {
-      if (isEditing && robot) {
-        const updatedRobot = updateRobot(robot.id, data);
-        if (updatedRobot) {
-          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          Alert.alert('Succès', 'Robot modifié avec succès !', [
-            { 
-              text: 'OK', 
-              onPress: () => {
-                onSuccess?.();
-                router.back();
-              }
-            },
-          ]);
+      if (useRedux) {
+        if (isEditing && robot) {
+          dispatch(updateRobotAction({ id: robot.id, changes: data }));
         } else {
-          throw new Error('Erreur lors de la modification');
+          dispatch(createRobotAction(data));
         }
       } else {
-        createRobot(data);
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert('Succès', 'Robot créé avec succès !', [
-          { 
-            text: 'OK', 
-            onPress: () => {
-              onSuccess?.();
-              router.back();
-            }
-          },
-        ]);
+        if (isEditing && robot) {
+          updateRobotZustand(robot.id, data);
+        } else {
+          createRobotZustand(data);
+        }
       }
+      
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert('Succès', isEditing ? 'Robot modifié avec succès !' : 'Robot créé avec succès !', [
+        { 
+          text: 'OK', 
+          onPress: () => {
+            onSuccess?.();
+            router.back();
+          }
+        },
+      ]);
     } catch (error) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Erreur', 'Une erreur est survenue lors de l\'enregistrement.');
+      const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
+      Alert.alert('Erreur', errorMessage);
+      console.error('Form submission error:', error);
     }
   };
 
