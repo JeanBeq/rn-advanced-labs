@@ -507,3 +507,97 @@ export const robotSchema = z.object({
 Un lien "🤖 Gestionnaire de Robots" a été ajouté dans la section TP4-A de la page d'accueil, permettant l'accès direct à la liste des robots.
 
 ## TP4-B — Redux Toolkit : CRUD “Robots” (liste + formulaire + delete)
+
+### 🎯 Objectifs réalisés
+Ce TP implémente un système CRUD complet pour la gestion de robots en utilisant Redux Toolkit comme store global, React Hook Form + Zod pour la validation, et Expo Router pour la navigation. Cette version utilise Redux Toolkit au lieu de Zustand pour illustrer une approche de gestion d'état plus structurée et adaptée aux applications complexes.
+
+### 📋 Modèle Robot & Contraintes métier
+Structure Robot :
+```typescript
+interface Robot {
+  id: string;        // UUID généré automatiquement
+  name: string;      // min 2 caractères, obligatoire, unique
+  label: string;     // min 3 caractères, obligatoire
+  year: number;      // entier entre 1950 et année courante
+  type: RobotType;   // enum: industrial | service | medical | educational | other
+}
+```
+
+### Contraintes implémentées :
+✅ Unicité du name (vérification en temps réel)
+✅ Validation year : 1950 ≤ année ≤ 2025
+✅ Sélection type via sélecteur natif (ActionSheet iOS / Alert Android)
+✅ Réutilisation du modèle et validation du TP4-A
+
+### 🏗️ Architecture & Arborescence
+
+```
+app/(main)/tp4B-robots/
+  ├── index.tsx            # 📋 Liste des robots (triée par année)
+  ├── create.tsx           # ➕ Écran création
+  ├── edit/[id].tsx        # ✏️ Écran édition
+  └── _layout.tsx          # 🧭 Navigation Stack
+
+app/
+  ├── _layout.tsx          # 🔴 Provider Redux intégré
+  ├── store.ts             # 🏪 Configuration du store Redux
+  └── rootReducer.ts       # 🔄 Combinaison des reducers
+
+features/
+  └── robotsRedux/
+      ├── robotsSlice.ts   # 📦 Slice Redux avec actions & reducers
+      └── selectors.ts     # 🔍 Sélecteurs mémorisés (Reselect)
+
+validation/
+  └── robotSchema.ts       # ✅ Schema Zod + contraintes (réutilisé)
+
+types/
+  └── robot.ts            # 🔧 Types TypeScript + enum (réutilisé)
+
+components/
+  ├── RobotForm.tsx        # 📝 Formulaire réutilisable (réutilisé)
+  └── RobotListItem.tsx    # 📄 Item de liste + actions (réutilisé)
+```
+
+### 🗂️ Choix technique : form stack
+
+Pourquoi React Hook Form + Zod pour le TP4-B ?
+
+Pour faciliter la comparaison directe entre Zustand (TP4-A) et Redux Toolkit (TP4-B), nous avons réutilisé exactement la même stack de formulaires : React Hook Form + Zod.
+
+Raisons stratégiques :
+
+Isolation de la variable : La seule différence entre TP4-A et TP4-B est la gestion d'état (Zustand vs Redux). Garder les formulaires identiques permet de comparer uniquement l'impact du store global.
+Composants réutilisables : RobotForm.tsx et robotSchema.ts sont partagés entre les deux TPs via une prop useRedux.
+Performance optimale : RHF + Zod reste le meilleur choix pour les formulaires React Native (moins de re-renders, types automatiques).
+Cohérence pédagogique : Les étudiants peuvent se concentrer sur Redux Toolkit sans réapprendre une nouvelle bibliothèque de formulaires.
+Implémentation partagée :
+
+Alternatives écartées :
+
+❌ Formik + Yup : Aurait introduit une variable supplémentaire (difficile de savoir si les différences viennent du store ou des formulaires).
+❌ Formulaires natifs : Pas de validation robuste, aurait complexifié le code inutilement.
+
+### 🛣️ Routes de navigation
+Route	Écran	Description
+/tp4B-robots	Liste	Affichage des robots + bouton flottant
+/tp4B-robots/create	Création	Formulaire en mode modal
+/tp4B-robots/edit/[id]	Édition	Formulaire pré-rempli en mode modal
+
+Navigation configurée :
+
+Tab "Redux Robots" dans la navigation principale
+Retour automatique après création/édition
+Gestion des erreurs (robot introuvable)
+Architecture identique au TP4-A pour faciliter la comparaison
+
+### Images et captures d'écran
+Supression d'un robot :
+![alt text](img-readme/image_sup.png)
+
+Création d'un robot :
+![alt text](img-readme/image_crea.png)
+
+Création d'un robot avec erreur de validation :
+![alt text](img-readme/image_err.png)
+![alt text](img-readme/image_err2.png)
