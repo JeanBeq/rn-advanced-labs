@@ -701,7 +701,7 @@ ALTER TABLE robots ADD COLUMN archived INTEGER DEFAULT 0;
 
 ---
 
-## 📂 Architecture du code
+### 📂 Architecture du code
 
 ```
 app/(main)/TP5-robots-db/
@@ -832,3 +832,157 @@ Recherche :
 
 Suppression :
 ![alt text](/img-readme/image129.png)
+
+# TP6 — Caméra (Expo) : capture, stockage local & galerie
+
+Application mobile permettant de capturer des photos, de les stocker localement et de les visualiser dans une galerie. Toutes les photos restent **dans l'application** (DocumentDirectory).
+
+### 1) Dépendances
+
+```json
+{
+  "expo-camera"
+  "expo-file-system"
+}
+```
+
+- **`expo-camera`** : Accès à la caméra, prévisualisation temps réel et capture de photos via `CameraView`.
+- **`expo-file-system`** : Stockage, lecture et suppression de fichiers locaux. Utilise la nouvelle API v18+ (`Paths`, `Directory`, `File`).
+
+### 2) Permissions
+
+#### Déclaration (`app.json`)
+```json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "NSCameraUsageDescription": "Cette application a besoin d'accéder à la caméra pour capturer des photos."
+      }
+    },
+    "android": {
+      "permissions": ["CAMERA"]
+    }
+  }
+}
+```
+
+#### Runtime
+- Permission demandée à l'entrée de l'écran Caméra via `useCameraPermission.ts`.
+- En cas de refus : message clair + bouton "Ouvrir les paramètres".
+
+### 3) Architecture
+
+```
+app/(main)/TP6-camera/
+├── _layout.tsx                    # Stack navigation
+├── index.tsx                      # Galerie (liste miniatures)
+├── camera.tsx                     # Capture
+├── detail/[id].tsx                # Détail photo
+└── lib/
+    ├── camera/
+    │   ├── storage.ts             # Service CRUD (savePhoto, listPhotos, getPhoto, deletePhoto)
+    │   └── types.ts               # Type Photo
+    └── hooks/
+        └── useCameraPermission.ts
+```
+
+**Principe** : Aucun accès direct à `FileSystem` dans l'UI. Tout passe par `storage.ts`.
+
+### API du service storage
+```typescript
+async function savePhoto(uri: string): Promise<Photo>
+async function listPhotos(): Promise<Photo[]>
+async function getPhoto(id: string): Promise<Photo | null>
+async function deletePhoto(id: string): Promise<void>
+```
+
+### 4) Capture & enregistrement local
+
+#### Écran Caméra
+- Prévisualisation plein écran (caméra arrière par défaut)
+- Bouton flip pour basculer avant/arrière
+- Bouton capture (85x85px)
+- Enregistrement automatique : `photo_<timestamp>.jpg` dans `documentDirectory/photos/`
+- Retour automatique vers la galerie
+
+#### Métadonnées stockées
+```typescript
+{
+  id: "photo_1234567890123",
+  uri: "file:///path/to/photo.jpg",
+  createdAt: 1234567890123,  // timestamp
+  size: 1234567              // bytes
+}
+```
+
+### 5) Galerie
+
+#### Écran Galerie (`index.tsx`)
+- Grille 3 colonnes responsive (`FlatList`)
+- Header avec compteur de photos
+- Bouton flottant 📷 (64x64px) en bas à droite
+- Pull-to-refresh
+- Rechargement auto au retour de la caméra (`useFocusEffect`)
+- Message "Aucune photo" si vide
+
+### 6) Détail d'une photo
+
+### Écran Détail (`detail/[id].tsx`)
+- Affichage plein écran
+- **Tap-to-hide** : tap sur l'image → masque/affiche overlays (animation 200ms)
+- Métadonnées : nom fichier, date (DD/MM/YYYY HH:mm), taille
+- Action **Supprimer** : confirmation → suppression physique → retour galerie
+
+### 7) Navigation (Expo Router)
+
+```
+/TP6-camera              → Galerie
+/TP6-camera/camera       → Caméra
+/TP6-camera/detail/[id]  → Détail
+```
+
+Point d'entrée : navbar principale (onglet 📷 Caméra) + page d'accueil.
+
+### 9) Qualité & architecture
+
+#### Service storage
+- **Single Responsibility** : chaque fonction un rôle unique
+- **Error Handling** : erreurs catchées et loggées
+- **Type Safety** : TypeScript strict
+- **Encapsulation** : chemins fichiers non exposés
+
+#### Nouvelle API FileSystem
+```typescript
+const PHOTOS_DIR = new Directory(Paths.document, 'photos');
+const destFile = new File(PHOTOS_DIR, fileName);
+await srcFile.copy(destFile);
+```
+
+### 10) Tests manuels
+
+| Test | Résultat |
+|------|----------|
+| **Permissions** : refuser → message + bouton paramètres | ✅ PASS |
+| **Capture multiple** : 2 photos → 2 miniatures visibles | ✅ PASS |
+| **Détail** : métadonnées affichées + tap-to-hide fluide | ✅ PASS |
+| **Suppression** : confirmation → fichier supprimé | ✅ PASS |
+| **Persistance** : redémarrage app → photos toujours là | ✅ PASS |
+| **Bascule caméra** : flip avant/arrière instantané | ✅ PASS |
+| **Galerie vide** : message clair + bouton caméra OK | ✅ PASS |
+
+### 11) Captures d'écran :
+Galerie vide :
+![alt text](img-readme/image-glr.png)
+
+Écran caméra :
+![alt text](img-readme/image-cam.png)
+
+Galerie avec photos :
+![alt text](img-readme/image-glr2.png)
+
+Affichage détail :
+![alt text](img-readme/image-det.png)
+
+Suppression photo :
+![alt text](img-readme/image-del.png)
