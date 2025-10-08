@@ -1,73 +1,75 @@
 import { Link } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   return (
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.container}>
-      <Text style={styles.title}>
-        Page d'accueil
-      </Text>
-      <Text style={styles.subtitle}>
-        Bienvenue dans les laboratoires React Native !
-      </Text>
-      
-      {/* Section TP3 - Formulaires */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>TP3 - Formulaires avancés</Text>
-        <Link href="/TP3-forms/formik" style={styles.linkContainer}>
-          <Text style={styles.linkText}>
-            📝 Formulaire avec Formik + Yup
-          </Text>
-        </Link>
-        <Link href="/TP3-forms/rhf" style={styles.linkContainer}>
-          <Text style={styles.linkText}>
-            🎯 Formulaire avec React Hook Form + Zod
-          </Text>
-        </Link>
+    <ScrollView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.title}>React Native Labs</Text>
+        <Text style={styles.subtitle}>Mes travaux pratiques</Text>
       </View>
 
-      {/* Section TP4 - Robots */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>TP4 - CRUD Robots</Text>
-        <Link href="/tp4A-robots" style={styles.linkContainer}>
-          <Text style={styles.linkText}>
-            🤖 Gestionnaire Robots (Zustand)
-          </Text>
+      {/* Modules List */}
+      <View style={styles.list}>
+        <Link href="/tp1-profile-card" asChild>
+          <Pressable style={styles.item}>
+            <View style={styles.itemLeft}>
+              <Text style={styles.icon}>👤</Text>
+              <Text style={styles.itemTitle}>TP1 - Profil</Text>
+            </View>
+            <Text style={styles.arrow}>›</Text>
+          </Pressable>
         </Link>
-        <Link href="/tp4b-robots-rtk" style={[styles.linkContainer, { backgroundColor: '#8B5CF6' }]}>
-          <Text style={styles.linkText}>
-            🔧 Gestionnaire Robots (Redux Toolkit)
-          </Text>
-        </Link>
-      </View>
 
-      {/* Section TP5 - Base de données SQLite */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>TP5 - Base de données SQLite</Text>
-        <Link href="/TP5-robots-db" style={[styles.linkContainer, { backgroundColor: '#10B981' }]}>
-          <Text style={styles.linkText}>
-            💾 Robots Offline (SQLite)
-          </Text>
+        <Link href="/TP3-forms/formik" asChild>
+          <Pressable style={styles.item}>
+            <View style={styles.itemLeft}>
+              <Text style={styles.icon}>📝</Text>
+              <Text style={styles.itemTitle}>TP3 - Formulaires</Text>
+            </View>
+            <Text style={styles.arrow}>›</Text>
+          </Pressable>
         </Link>
-      </View>
 
-      {/* Section Navigation existante */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Navigation (TP2)</Text>
-        <Link href="/detail/4458" style={styles.linkContainer}>
-          <Text style={styles.linkText}>
-            Voir les détails de l'élément 4458
-          </Text>
+        <Link href="/tp4A-robots" asChild>
+          <Pressable style={styles.item}>
+            <View style={styles.itemLeft}>
+              <Text style={styles.icon}>🤖</Text>
+              <Text style={styles.itemTitle}>TP4A - Zustand</Text>
+            </View>
+            <Text style={styles.arrow}>›</Text>
+          </Pressable>
         </Link>
-        <Link href="/detail/123" style={styles.linkContainer}>
-          <Text style={styles.linkText}>
-            Voir les détails de l'élément 123
-          </Text>
+
+        <Link href="/tp4b-robots-rtk" asChild>
+          <Pressable style={styles.item}>
+            <View style={styles.itemLeft}>
+              <Text style={styles.icon}>🔧</Text>
+              <Text style={styles.itemTitle}>TP4B - Redux</Text>
+            </View>
+            <Text style={styles.arrow}>›</Text>
+          </Pressable>
         </Link>
-        <Link href="/detail/abc" style={styles.linkContainer}>
-          <Text style={styles.linkText}>
-            Voir les détails de l'élément abc
-          </Text>
+
+        <Link href="/TP5-robots-db" asChild>
+          <Pressable style={styles.item}>
+            <View style={styles.itemLeft}>
+              <Text style={styles.icon}>💾</Text>
+              <Text style={styles.itemTitle}>TP5 - SQLite</Text>
+            </View>
+            <Text style={styles.arrow}>›</Text>
+          </Pressable>
+        </Link>
+
+        <Link href="/TP6-camera" asChild>
+          <Pressable style={styles.item}>
+            <View style={styles.itemLeft}>
+              <Text style={styles.icon}>📹</Text>
+              <Text style={styles.itemTitle}>TP6 - Caméra</Text>
+            </View>
+            <Text style={styles.arrow}>›</Text>
+          </Pressable>
         </Link>
       </View>
     </ScrollView>
@@ -75,47 +77,58 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
   container: {
-    paddingVertical: 40,
-    paddingHorizontal: 20,
-    alignItems: 'center',
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
+    backgroundColor: '#fff',
+    padding: 24,
+    paddingTop: 60,
+    paddingBottom: 32,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: '#000',
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 30,
     color: '#666',
   },
-  section: {
-    marginBottom: 30,
+  list: {
+    padding: 16,
+    gap: 12,
+  },
+  item: {
+    backgroundColor: '#fff',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
-  sectionTitle: {
-    fontSize: 20,
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  icon: {
+    fontSize: 32,
+  },
+  itemTitle: {
+    fontSize: 18,
     fontWeight: '600',
-    marginBottom: 15,
-    color: '#333',
+    color: '#000',
   },
-  linkContainer: {
-    marginVertical: 8,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    minWidth: 280,
-  },
-  linkText: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: 'white',
-    fontWeight: '500',
+  arrow: {
+    fontSize: 28,
+    color: '#999',
+    fontWeight: '300',
   },
 });
